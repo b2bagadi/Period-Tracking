@@ -264,6 +264,107 @@ exports.googleSignIn = async (req, res) => {
   }
 };
 
+// Google OAuth Callback for mobile app
+exports.googleCallback = async (req, res) => {
+  try {
+    const { code, error: authError } = req.query;
+
+    if (authError) {
+      console.error('Google OAuth error:', authError);
+      return res.redirect(`periodtracker://auth?error=${authError}`);
+    }
+
+    if (!code) {
+      console.error('No authorization code received');
+      return res.redirect('periodtracker://auth?error=no_code');
+    }
+
+    // Exchange code for tokens
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        code: code.toString(),
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code'
+      })
+    });
+
+    const tokenData = await tokenResponse.json();
+
+    if (!tokenResponse.ok) {
+      console.error('Token exchange failed:', tokenData);
+      return res.redirect(`periodtracker://auth?error=token_exchange_failed`);
+    }
+
+    // Get user info from Google
+    const ticket = await client.verifyIdToken({
+      idToken: tokenData.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Check if user exists
+    let result = await pool.query(
+      'SELECT * FROM users WHERE google_id = $1 OR email = $2',
+      [googleId, email]
+    );
+
+    let user;
+
+    if (result.rows.length > 0) {
+      // User exists - update Google ID if not set
+      user = result.rows[0];
+      
+      if (!user.google_id) {
+        await pool.query(
+          'UPDATE users SET google_id = $1, auth_provider = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3',
+          [googleId, 'google', user.id]
+        );
+      }
+      
+      // Update profile picture if available
+      if (picture && !user.profile_picture) {
+        await pool.query(
+          'UPDATE users SET profile_picture = $1 WHERE id = $2',
+          [picture, user.id]
+        );
+      }
+    } else {
+      // Create new user
+      const insertResult = await pool.query(
+        `INSERT INTO users (email, full_name, google_id, auth_provider, profile_picture, date_of_birth)
+         VALUES ($1, $2, $3, 'google', $4, NULL)
+         RETURNING id, email, full_name, date_of_birth, profile_picture, created_at`,
+        [email, name, googleId, picture]
+      );
+      
+      user = insertResult.rows[0];
+      
+      // Create default settings for new Google user
+      await pool.query(
+        `INSERT INTO user_settings (user_id, cycle_length, period_length, notifications_enabled, reminder_days_before)
+         VALUES ($1, 28, 5, true, 2)`,
+        [user.id]
+      );
+    }
+
+    const token = generateToken(user.id);
+
+    // Redirect back to app with token
+    res.redirect(`periodtracker://auth?token=${token}&userId=${user.id}&email=${encodeURIComponent(email)}&name=${encodeURIComponent(name || user.full_name)}`);
+  } catch (error) {
+    console.error('Google callback error:', error);
+    res.redirect(`periodtracker://auth?error=${encodeURIComponent(error.message)}`);
+  }
+};
+
 // Get current user
 exports.getCurrentUser = async (req, res) => {
   try {
