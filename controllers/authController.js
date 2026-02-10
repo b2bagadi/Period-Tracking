@@ -149,11 +149,42 @@ exports.login = async (req, res) => {
 // Google Sign-In
 exports.googleSignIn = async (req, res) => {
   try {
-    const { idToken, fullName, dateOfBirth } = req.body;
+    const { idToken, code, redirectUri, fullName, dateOfBirth } = req.body;
+    
+    let googleIdToken = idToken;
+    
+    // If authorization code is provided, exchange it for tokens
+    if (code) {
+      console.log('Exchanging authorization code for tokens...');
+      
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          code: code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code',
+        }),
+      });
+      
+      if (!tokenResponse.ok) {
+        const errorData = await tokenResponse.text();
+        console.error('Token exchange failed:', errorData);
+        throw new Error('Failed to exchange authorization code for tokens');
+      }
+      
+      const tokenData = await tokenResponse.json();
+      googleIdToken = tokenData.id_token;
+      console.log('Successfully exchanged code for ID token');
+    }
     
     // Verify Google token
     const ticket = await client.verifyIdToken({
-      idToken,
+      idToken: googleIdToken,
       audience: process.env.GOOGLE_CLIENT_ID
     });
     

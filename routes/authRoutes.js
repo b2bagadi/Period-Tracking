@@ -35,8 +35,17 @@ const loginValidation = [
 
 const googleSignInValidation = [
   body('idToken')
+    .optional()
     .notEmpty()
-    .withMessage('Google ID token is required')
+    .withMessage('Google ID token is required'),
+  body('code')
+    .optional()
+    .notEmpty()
+    .withMessage('Google authorization code is required'),
+  body('redirectUri')
+    .optional()
+    .notEmpty()
+    .withMessage('Redirect URI is required when using authorization code')
 ];
 
 // ==================== AUTH ROUTES ====================
