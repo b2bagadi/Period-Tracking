@@ -51,6 +51,7 @@ const googleSignInValidation = [
 // ==================== AUTH ROUTES ====================
 router.post('/register', registerValidation, authController.register);
 router.post('/login', loginValidation, authController.login);
+router.get('/google', authController.googleRedirect);
 router.post('/google', googleSignInValidation, authController.googleSignIn);
 router.get('/google/callback', authController.googleCallback);
 router.get('/me', authMiddleware, authController.getCurrentUser);
