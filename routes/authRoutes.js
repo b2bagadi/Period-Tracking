@@ -58,6 +58,7 @@ router.get('/me', authMiddleware, authController.getCurrentUser);
 router.put('/profile', authMiddleware, authController.updateProfile);
 router.put('/change-password', authMiddleware, authController.changePassword);
 router.delete('/account', authMiddleware, authController.deleteAccount);
+router.post('/firebase-login', authController.firebaseSignIn);
 
 // ==================== DATA ROUTES ====================
 // Sync all data

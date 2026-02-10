@@ -1,7 +1,16 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
+const { initializeApp, cert } = require('firebase-admin/app');
+const { verifyIdToken } = require('firebase-admin/auth');
 const pool = require('../config/database');
+
+// Initialize Firebase Admin
+initializeApp({
+  credential: cert({
+    projectId: process.env.FIREBASE_PROJECT_ID || 'period-tracking-dc2f3'
+  })
+});
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -290,7 +299,7 @@ exports.googleSignIn = async (req, res) => {
 // Google OAuth Callback for mobile app
 exports.googleCallback = async (req, res) => {
   try {
-    const { code, error: authError } = req.query;
+    const { code, error: authError, code_verifier } = req.query;
 
     if (authError) {
       console.error('Google OAuth error:', authError);
@@ -302,19 +311,27 @@ exports.googleCallback = async (req, res) => {
       return res.redirect('periodtracker://auth?error=no_code');
     }
 
+    // Build token exchange params
+    const tokenParams = {
+      code: code.toString(),
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      grant_type: 'authorization_code'
+    };
+
+    // Add code_verifier if PKCE is used
+    if (code_verifier) {
+      tokenParams.code_verifier = code_verifier;
+    }
+
     // Exchange code for tokens
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: new URLSearchParams({
-        code: code.toString(),
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-        grant_type: 'authorization_code'
-      })
+      body: new URLSearchParams(tokenParams)
     });
 
     const tokenData = await tokenResponse.json();
@@ -558,6 +575,95 @@ exports.deleteAccount = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error deleting account',
+      error: error.message
+    });
+  }
+};
+
+// Firebase Sign-In
+exports.firebaseSignIn = async (req, res) => {
+  try {
+    const { idToken, email, fullName, profilePicture } = req.body;
+    
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Firebase ID token is required'
+      });
+    }
+    
+    // Verify Firebase token
+    const decodedToken = await verifyIdToken(idToken);
+    const { uid: firebaseId, email: firebaseEmail } = decodedToken;
+    
+    // Check if user exists
+    let result = await pool.query(
+      'SELECT * FROM users WHERE firebase_id = $1 OR email = $2',
+      [firebaseId, firebaseEmail || email]
+    );
+    
+    let user;
+    
+    if (result.rows.length > 0) {
+      // User exists - update Firebase ID if not set
+      user = result.rows[0];
+      
+      if (!user.firebase_id) {
+        await pool.query(
+          'UPDATE users SET firebase_id = $1, auth_provider = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3',
+          [firebaseId, 'firebase', user.id]
+        );
+      }
+      
+      // Update profile picture if available
+      if (profilePicture && !user.profile_picture) {
+        await pool.query(
+          'UPDATE users SET profile_picture = $1 WHERE id = $2',
+          [profilePicture, user.id]
+        );
+      }
+    } else {
+      // Create new user
+      const insertResult = await pool.query(
+        `INSERT INTO users (email, full_name, firebase_id, auth_provider, profile_picture, date_of_birth)
+         VALUES ($1, $2, $3, 'firebase', $4, NULL)
+         RETURNING id, email, full_name, date_of_birth, profile_picture, created_at`,
+        [firebaseEmail || email, fullName, firebaseId, profilePicture]
+      );
+      
+      user = insertResult.rows[0];
+      
+      // Create default settings for new Firebase user
+      await pool.query(
+        `INSERT INTO user_settings (user_id, cycle_length, period_length, notifications_enabled, reminder_days_before)
+         VALUES ($1, 28, 5, true, 2)`,
+        [user.id]
+      );
+    }
+    
+    const token = generateToken(user.id);
+    
+    res.json({
+      success: true,
+      message: 'Firebase Sign-In successful',
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name,
+          dateOfBirth: user.date_of_birth,
+          authProvider: 'firebase',
+          profilePicture: user.profile_picture || profilePicture,
+          createdAt: user.created_at
+        },
+        token
+      }
+    });
+  } catch (error) {
+    console.error('Firebase Sign-In error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error with Firebase Sign-In',
       error: error.message
     });
   }
