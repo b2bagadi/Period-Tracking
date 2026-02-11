@@ -1,16 +1,31 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
-const { initializeApp, cert } = require('firebase-admin/app');
-const { verifyIdToken } = require('firebase-admin/auth');
 const pool = require('../config/database');
 
-// Initialize Firebase Admin
-initializeApp({
-  credential: cert({
-    projectId: process.env.FIREBASE_PROJECT_ID || 'period-tracking-dc2f3'
-  })
-});
+let verifyIdToken = null;
+
+if (process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
+  try {
+    const { initializeApp, cert } = require('firebase-admin/app');
+    const { verifyIdToken: verifyToken } = require('firebase-admin/auth');
+    
+  initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID || 'period-tracking-dc2f3',
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+    })
+  });
+    verifyIdToken = verifyToken;
+    console.log('✅ Firebase Admin initialized successfully');
+  } catch (error) {
+    console.error('❌ Firebase Admin initialization failed:', error.message);
+  }
+} else {
+  console.warn('⚠️ Firebase Admin not configured - Firebase Sign-In will not work');
+  console.warn('   Set FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY in .env');
+}
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
