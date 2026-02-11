@@ -3,21 +3,22 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const pool = require('../config/database');
 
-let verifyIdToken = null;
+let adminAuth = null;
 
 if (process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
   try {
     const { initializeApp, cert } = require('firebase-admin/app');
-    const { verifyIdToken: verifyToken } = require('firebase-admin/auth');
+    const { getAuth } = require('firebase-admin/auth');
     
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID || 'period-tracking-dc2f3',
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-    })
-  });
-    verifyIdToken = verifyToken;
+    const app = initializeApp({
+      credential: cert({
+        projectId: process.env.FIREBASE_PROJECT_ID || 'period-tracking-dc2f3',
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      })
+    });
+    
+    adminAuth = getAuth(app);
     console.log('✅ Firebase Admin initialized successfully');
   } catch (error) {
     console.error('❌ Firebase Admin initialization failed:', error.message);
@@ -607,8 +608,15 @@ exports.firebaseSignIn = async (req, res) => {
       });
     }
     
+    if (!adminAuth) {
+      return res.status(500).json({
+        success: false,
+        message: 'Firebase Admin not initialized. Please check server configuration.'
+      });
+    }
+    
     // Verify Firebase token
-    const decodedToken = await verifyIdToken(idToken);
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
     const { uid: firebaseId, email: firebaseEmail } = decodedToken;
     
     // Check if user exists
