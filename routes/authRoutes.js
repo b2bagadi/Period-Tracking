@@ -4,7 +4,6 @@ const { body } = require('express-validator');
 const authController = require('../controllers/authController');
 const dataController = require('../controllers/dataController');
 const authMiddleware = require('../middleware/authMiddleware');
-const initDatabase = require('../initDatabase');
 
 // Validation middleware
 const registerValidation = [
@@ -64,10 +63,36 @@ router.post('/firebase-login', authController.firebaseSignIn);
 // Temporary: Database migration endpoint
 router.get('/migrate', async (req, res) => {
   try {
-    await initDatabase();
-    res.json({ success: true, message: 'Database migration completed' });
+    console.log('Migration endpoint called');
+    
+    // Import pool directly
+    const pool = require('../config/database');
+    
+    // Run migrations
+    console.log('Adding firebase_id column...');
+    await pool.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS firebase_id VARCHAR(255) UNIQUE
+    `);
+    
+    console.log('Making date_of_birth nullable...');
+    await pool.query(`
+      ALTER TABLE users ALTER COLUMN date_of_birth DROP NOT NULL
+    `);
+    
+    console.log('Creating index for firebase_id...');
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_users_firebase_id ON users(firebase_id)
+    `);
+    
+    console.log('Migration completed successfully');
+    res.json({ success: true, message: 'Database migration completed successfully' });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Migration error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      stack: error.stack 
+    });
   }
 });
 
