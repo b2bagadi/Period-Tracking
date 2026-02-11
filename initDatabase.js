@@ -11,8 +11,9 @@ const initDatabase = async () => {
         email VARCHAR(255) UNIQUE NOT NULL,
         password_hash VARCHAR(255),
         full_name VARCHAR(255) NOT NULL,
-        date_of_birth DATE NOT NULL,
+        date_of_birth DATE,
         google_id VARCHAR(255) UNIQUE,
+        firebase_id VARCHAR(255) UNIQUE,
         auth_provider VARCHAR(50) DEFAULT 'email',
         profile_picture VARCHAR(500),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -29,6 +30,31 @@ const initDatabase = async () => {
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)
     `);
+    
+    // Create index on firebase_id for faster lookups
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_users_firebase_id ON users(firebase_id)
+    `);
+    
+    // Migration: Add firebase_id column if it doesn't exist (for existing databases)
+    try {
+      await pool.query(`
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS firebase_id VARCHAR(255) UNIQUE
+      `);
+      console.log('✅ firebase_id column added (or already exists)');
+    } catch (error) {
+      console.log('Note: firebase_id column may already exist');
+    }
+    
+    // Migration: Make date_of_birth nullable (for Firebase users)
+    try {
+      await pool.query(`
+        ALTER TABLE users ALTER COLUMN date_of_birth DROP NOT NULL
+      `);
+      console.log('✅ date_of_birth is now nullable');
+    } catch (error) {
+      console.log('Note: date_of_birth may already be nullable');
+    }
     
     // Create periods table
     await pool.query(`

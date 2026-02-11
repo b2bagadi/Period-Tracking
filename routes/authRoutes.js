@@ -4,6 +4,7 @@ const { body } = require('express-validator');
 const authController = require('../controllers/authController');
 const dataController = require('../controllers/dataController');
 const authMiddleware = require('../middleware/authMiddleware');
+const initDatabase = require('../initDatabase');
 
 // Validation middleware
 const registerValidation = [
@@ -59,6 +60,16 @@ router.put('/profile', authMiddleware, authController.updateProfile);
 router.put('/change-password', authMiddleware, authController.changePassword);
 router.delete('/account', authMiddleware, authController.deleteAccount);
 router.post('/firebase-login', authController.firebaseSignIn);
+
+// Temporary: Database migration endpoint
+router.get('/migrate', async (req, res) => {
+  try {
+    await initDatabase();
+    res.json({ success: true, message: 'Database migration completed' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 // ==================== DATA ROUTES ====================
 // Sync all data
