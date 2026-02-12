@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Period Tracker - Privacy Policy & Terms of Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(233, 30, 99, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #E91E63 0%, #F06292 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #fce4ec;
+            margin-bottom: 30px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #E91E63;
+            border-bottom: 3px solid #E91E63;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        h2 {
+            color: #E91E63;
+            font-size: 24px;
+            margin-bottom: 20px;
+            margin-top: 30px;
+            font-weight: 600;
+        }
+        
+        h2:first-child {
+            margin-top: 0;
+        }
+        
+        h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 12px;
+            margin-top: 24px;
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 16px;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        ul {
+            margin-bottom: 16px;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            line-height: 1.7;
+            color: #555;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            border-left: 4px solid #E91E63;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .highlight-box h3 {
+            margin-top: 0;
+            color: #E91E63;
+        }
+        
+        .last-updated {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .footer p {
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .contact-link {
+            color: #E91E63;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .content {
+                padding: 25px 20px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Period Tracker</h1>
+            <p>Privacy Policy & Terms of Service</p>
+        </div>
+        
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="showSection('privacy')">Privacy Policy</button>
+                <button class="tab" onclick="showSection('terms')">Terms of Service</button>
+            </div>
+            
+            <!-- Privacy Policy Section -->
+            <div id="privacy" class="section active">
+                <div class="highlight-box">
+                    <h3>🔒 Your Privacy Matters</h3>
+                    <p>We take your privacy seriously. Your health data is encrypted and securely stored. We never sell your personal information to third parties.</p>
+                </div>
+                
+                <h2>Privacy Policy</h2>
+                <p><strong>Last Updated:</strong> February 12, 2026</p>
+                
+                <h3>1. Introduction</h3>
+                <p>Welcome to Period Tracker ("we," "our," or "us"). This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our mobile application and services. By using Period Tracker, you agree to the collection and use of information in accordance with this policy.</p>
+                
+                <h3>2. Information We Collect</h3>
+                <p>We collect the following types of information:</p>
+                <ul>
+                    <li><strong>Account Information:</strong> Email address, full name, date of birth, and password (encrypted)</li>
+                    <li><strong>Health Data:</strong> Period dates, cycle information, symptoms (flow, mood, physical symptoms), temperature readings, and personal notes</li>
+                    <li><strong>Usage Data:</strong> App usage patterns, feature preferences, and device information</li>
+                    <li><strong>Authentication Data:</strong> Google Sign-In information (if used)</li>
+                </ul>
+                
+                <h3>3. How We Use Your Information</h3>
+                <p>We use your information to:</p>
+                <ul>
+                    <li>Provide period tracking and cycle prediction services</li>
+                    <li>Send reminders and notifications about upcoming periods</li>
+                    <li>Generate health insights and statistics</li>
+                    <li>Improve our app functionality and user experience</li>
+                    <li>Communicate important updates about our services</li>
+                </ul>
+                
+                <h3>4. Data Security</h3>
+                <p>Your data security is our top priority:</p>
+                <ul>
+                    <li><strong>Encryption:</strong> All data is encrypted in transit (SSL/TLS) and at rest</li>
+                    <li><strong>Secure Storage:</strong> Data is stored on Neon PostgreSQL database with industry-standard security</li>
+                    <li><strong>Authentication:</strong> Secure authentication using JWT tokens and Firebase</li>
+                    <li><strong>Access Control:</strong> Only you can access your personal health data</li>
+                    <li><strong>Data Retention:</strong> Your data is retained as long as your account is active</li>
+                </ul>
+                
+                <div class="highlight-box">
+                    <h3>🌐 Cloud Sync</h3>
+                    <p>Your data is securely stored in the cloud. This means:</p>
+                    <ul>
+                        <li>Your data won't be lost if you delete the app</li>
+                        <li>You can access your data from any device by signing in</li>
+                        <li>Your cycle history and symptoms are always backed up</li>
+                    </ul>
+                </div>
+                
+                <h3>5. Data Sharing</h3>
+                <p>We do NOT sell, rent, or trade your personal information. We may share data only in the following circumstances:</p>
+                <ul>
+                    <li><strong>With Your Consent:</strong> When you choose to export and share your data with healthcare providers</li>
+                    <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                    <li><strong>Service Providers:</strong> With trusted third-party services (Google Firebase, Neon Database) solely for app functionality</li>
+                </ul>
+                
+                <h3>6. Your Rights</h3>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access your personal data</li>
+                    <li>Update or correct your information</li>
+                    <li>Delete your account and all associated data</li>
+                    <li>Export your data for personal use</li>
+                    <li>Opt-out of non-essential communications</li>
+                </ul>
+                
+                <h3>7. Children's Privacy</h3>
+                <p>Our services are intended for users aged 13 and older. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately.</p>
+                
+                <h3>8. Changes to This Policy</h3>
+                <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+                
+                <h3>9. Contact Us</h3>
+                <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+                <p>Email: <a href="mailto:privacy@periodtracker.app" class="contact-link">privacy@periodtracker.app</a></p>
+            </div>
+            
+            <!-- Terms of Service Section -->
+            <div id="terms" class="section">
+                <div class="highlight-box">
+                    <h3>📋 Agreement</h3>
+                    <p>By using Period Tracker, you agree to these Terms of Service. Please read them carefully before creating an account.</p>
+                </div>
+                
+                <h2>Terms of Service</h2>
+                <p><strong>Last Updated:</strong> February 12, 2026</p>
+                
+                <h3>1. Acceptance of Terms</h3>
+                <p>By accessing or using Period Tracker (the "App"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of the terms, you may not access the App.</p>
+                
+                <h3>2. Description of Service</h3>
+                <p>Period Tracker is a health tracking application designed to help users monitor menstrual cycles, symptoms, and related health information. The App provides:</p>
+                <ul>
+                    <li>Period and cycle tracking</li>
+                    <li>Symptom logging and monitoring</li>
+                    <li>Fertility window predictions</li>
+                    <li>Health statistics and insights</li>
+                    <li>Data export capabilities</li>
+                </ul>
+                
+                <h3>3. User Accounts</h3>
+                <p>To use certain features of the App, you must create an account. You agree to:</p>
+                <ul>
+                    <li>Provide accurate and complete information</li>
+                    <li>Maintain the security of your password</li>
+                    <li>Accept all responsibility for activities under your account</li>
+                    <li>Notify us immediately of any unauthorized access</li>
+                    <li>Be at least 13 years of age</li>
+                </ul>
+                
+                <h3>4. Medical Disclaimer</h3>
+                <div class="highlight-box">
+                    <h3>⚠️ Important Medical Notice</h3>
+                    <p><strong>Period Tracker is for informational purposes only.</strong> It is not intended to:</p>
+                    <ul>
+                        <li>Provide medical advice, diagnosis, or treatment</li>
+                        <li>Replace professional healthcare services</li>
+                        <li>Be used as a sole method of contraception</li>
+                        <li>Replace consultation with qualified healthcare providers</li>
+                    </ul>
+                    <p>Always consult with a qualified healthcare provider for medical advice, diagnosis, or treatment.</p>
+                </div>
+                
+                <h3>5. User Responsibilities</h3>
+                <p>You agree to:</p>
+                <ul>
+                    <li>Use the App only for lawful purposes</li>
+                    <li>Not share your account credentials with others</li>
+                    <li>Not attempt to breach the App's security</li>
+                    <li>Not use the App to harass, abuse, or harm others</li>
+                    <li>Keep your health information accurate and up-to-date</li>
+                </ul>
+                
+                <h3>6. Data Ownership and Export</h3>
+                <p>You own your personal health data. You have the right to:</p>
+                <ul>
+                    <li>Export your data at any time</li>
+                    <li>Share your data with healthcare providers</li>
+                    <li>Delete your account and associated data</li>
+                    <li>Request a copy of your data</li>
+                </ul>
+                
+                <h3>7. Intellectual Property</h3>
+                <p>The App and its original content, features, and functionality are owned by Period Tracker and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+                
+                <h3>8. Limitation of Liability</h3>
+                <p>In no event shall Period Tracker, its directors, employees, partners, agents, suppliers, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+                
+                <h3>9. Termination</h3>
+                <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including without limitation if you breach the Terms. Upon termination, your right to use the App will immediately cease.</p>
+                
+                <h3>10. Changes to Terms</h3>
+                <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days' notice prior to any new terms taking effect.</p>
+                
+                <h3>11. Governing Law</h3>
+                <p>These Terms shall be governed and construed in accordance with the laws of [Your Country/State], without regard to its conflict of law provisions.</p>
+                
+                <h3>12. Contact Information</h3>
+                <p>If you have any questions about these Terms, please contact us:</p>
+                <p>Email: <a href="mailto:support@periodtracker.app" class="contact-link">support@periodtracker.app</a></p>
+            </div>
+            
+            <div class="last-updated">
+                <p>© 2026 Period Tracker. All rights reserved.</p>
+                <p>By using our app, you agree to our Privacy Policy and Terms of Service.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Your health data is encrypted and securely stored on Neon PostgreSQL database.</p>
+            <p>Access your data from anywhere, anytime. Your progress is never lost.</p>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

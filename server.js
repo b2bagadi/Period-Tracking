@@ -30,8 +30,16 @@ app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
+// Serve static files (for privacy policy page)
+app.use(express.static('public'));
+
 // Routes
 app.use('/api/auth', authRoutes);
+
+// Privacy Policy and Terms of Service page
+app.get('/privacy-policy', (req, res) => {
+  res.sendFile(__dirname + '/public/privacy-policy.html');
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
